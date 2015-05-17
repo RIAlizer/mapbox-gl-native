@@ -61,6 +61,7 @@ typedef NS_ENUM(NSUInteger, MGLUserTrackingState) {
 NSString *const MGLMapboxSetupDocumentationURLDisplayString = @"mapbox.com/help/first-steps-ios-sdk";
 
 const NSTimeInterval MGLAnimationDuration = 0.3;
+const NSTimeInterval MGLMaximumUserLocationAnimationDuration = 1;
 const CGSize MGLAnnotationUpdateViewportOutset = {150, 150};
 const CGFloat MGLMinimumZoom = 3;
 const NSUInteger MGLTargetFrameInterval = 1;  //Target FPS will be 60 divided by this value
@@ -3155,7 +3156,12 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
     self.userLocationAnnotationView.haloLayer.hidden = ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate) ||
         newLocation.horizontalAccuracy > 10;
 
-    [self updateUserLocationAnnotationView];
+    NSTimeInterval duration = MGLAnimationDuration;
+    if (oldLocation && ! CGPointEqualToPoint(self.userLocationAnnotationView.center, CGPointZero))
+    {
+        duration = MAX([newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp], MGLMaximumUserLocationAnimationDuration);
+    }
+    [self updateUserLocationAnnotationViewAnimatedWithDuration:duration];
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
@@ -3414,6 +3420,11 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
 
 - (void)updateUserLocationAnnotationView
 {
+    [self updateUserLocationAnnotationViewAnimatedWithDuration:0];
+}
+
+- (void)updateUserLocationAnnotationViewAnimatedWithDuration:(NSTimeInterval)duration
+{
     MGLUserLocationAnnotationView *annotationView = self.userLocationAnnotationView;
     if ( ! CLLocationCoordinate2DIsValid(self.userLocation.coordinate)) {
         annotationView.layer.hidden = YES;
@@ -3436,7 +3447,9 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
     if (CGRectContainsPoint(CGRectInset(self.bounds, -MGLAnnotationUpdateViewportOutset.width,
         -MGLAnnotationUpdateViewportOutset.height), userPoint))
     {
-        annotationView.center = userPoint;
+        [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+            annotationView.center = userPoint;
+        } completion:NULL];
         annotationView.layer.hidden = NO;
         [annotationView setupLayers];
         
