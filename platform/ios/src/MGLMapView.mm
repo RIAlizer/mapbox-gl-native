@@ -2999,7 +2999,7 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
 
             if (self.userLocationAnnotationView)
             {
-                [self locationManager:self.locationManager didUpdateLocations:@[self.userLocation.location]];
+                [self locationManager:self.locationManager didUpdateLocations:@[self.userLocation.location] animated:animated];
             }
 
             break;
@@ -3016,7 +3016,7 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
 
             if (self.userLocationAnnotationView)
             {
-                [self locationManager:self.locationManager didUpdateLocations:@[self.userLocation.location]];
+                [self locationManager:self.locationManager didUpdateLocations:@[self.userLocation.location] animated:animated];
             }
 
             [self updateHeadingForDeviceOrientation];
@@ -3033,7 +3033,12 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
     }
 }
 
-- (void)locationManager:(__unused CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    [self locationManager:manager didUpdateLocations:locations animated:YES];
+}
+
+- (void)locationManager:(__unused CLLocationManager *)manager didUpdateLocations:(NSArray *)locations animated:(BOOL)animated
 {
     CLLocation *oldLocation = self.userLocation.location;
     CLLocation *newLocation = locations.lastObject;
@@ -3083,7 +3088,7 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
                                    edgePadding:insets
                                      zoomLevel:self.zoomLevel
                                      direction:course
-                                      duration:1
+                                      duration:animated ? 1 : 0
                        animationTimingFunction:linearFunction
                              completionHandler:NULL];
                 }
@@ -3098,7 +3103,7 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
                     camera.heading = course;
                     
                     __weak MGLMapView *weakSelf = self;
-                    [self _flyToCamera:camera withDuration:-1 peakAltitude:-1 completionHandler:^{
+                    [self _flyToCamera:camera withDuration:animated ? -1 : 0 peakAltitude:-1 completionHandler:^{
                         MGLMapView *strongSelf = weakSelf;
                         strongSelf.userTrackingState = MGLUserTrackingStateChanged;
                     }];
@@ -3116,7 +3121,7 @@ std::chrono::steady_clock::duration MGLDurationInSeconds(float duration)
                 camera.altitude = newLocation.horizontalAccuracy;
                 
                 __weak MGLMapView *weakSelf = self;
-                [self _flyToCamera:camera withDuration:-1 peakAltitude:-1 completionHandler:^{
+                [self _flyToCamera:camera withDuration:animated ? -1 : 0 peakAltitude:-1 completionHandler:^{
                     MGLMapView *strongSelf = weakSelf;
                     strongSelf.userTrackingState = MGLUserTrackingStateChanged;
                 }];
