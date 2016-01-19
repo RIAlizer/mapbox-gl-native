@@ -92,15 +92,18 @@
           '<@(variant_cflags)',
           '<@(sqlite_cflags)',
           '<@(zlib_cflags)',
+          '<@(webp_cflags)',
         ],
         'libraries': [
           '<@(libuv_static_libs)',
           '<@(sqlite_static_libs)',
           '<@(zlib_static_libs)',
+          '<@(webp_static_libs)',
         ],
         'ldflags': [
           '<@(sqlite_ldflags)',
           '<@(zlib_ldflags)',
+          '<@(webp_ldflags)',
           '-framework CoreLocation',
           '-framework GLKit',
           '-framework ImageIO',

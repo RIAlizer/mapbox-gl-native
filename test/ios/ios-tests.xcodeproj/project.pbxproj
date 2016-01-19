@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		15C5FC0B1C4E5DE000C545C1 /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C5FC0A1C4E5DE000C545C1 /* libwebp.a */; };
 		7D3A84F41BC844970041A655 /* libgeojsonvt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D3A84F31BC844970041A655 /* libgeojsonvt.a */; };
 		96567A231B0E84CD00D78776 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 96567A221B0E84CD00D78776 /* LaunchScreen.xib */; };
 		96567A311B0E8BB900D78776 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 96567A301B0E8BB900D78776 /* Images.xcassets */; };
@@ -75,6 +76,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		15C5FC0A1C4E5DE000C545C1 /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebp.a; path = "../../mason_packages/ios-9.0/webp/0.5.0/lib/libwebp.a"; sourceTree = "<group>"; };
 		7D3A84F31BC844970041A655 /* libgeojsonvt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgeojsonvt.a; path = "../../mason_packages/ios-9.0/geojsonvt/2.1.6/lib/libgeojsonvt.a"; sourceTree = "<group>"; };
 		96567A221B0E84CD00D78776 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = SOURCE_ROOT; };
 		96567A301B0E8BB900D78776 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = SOURCE_ROOT; };
@@ -136,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD41CE171ACB5DE700FA7979 /* GLKit.framework in Frameworks */,
+				15C5FC0B1C4E5DE000C545C1 /* libwebp.a in Frameworks */,
 				DD41CE151ACB5DE000FA7979 /* ImageIO.framework in Frameworks */,
 				DD41CE131ACB5DDA00FA7979 /* MobileCoreServices.framework in Frameworks */,
 				DDC5C7BC1B84D62B00E1EA6B /* libMapbox.a in Frameworks */,
@@ -182,6 +185,7 @@
 		DD043325196DB9BC00E6F39D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				15C5FC0A1C4E5DE000C545C1 /* libwebp.a */,
 				7D3A84F31BC844970041A655 /* libgeojsonvt.a */,
 				DD0580EF1ACB62BE00B112C9 /* CoreGraphics.framework */,
 				DD41CE081ACB5DBC00FA7979 /* CoreTelephony.framework */,
