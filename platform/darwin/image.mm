@@ -2,6 +2,8 @@
 
 #import <ImageIO/ImageIO.h>
 
+#import <webp/decode.h>
+
 #if TARGET_OS_IPHONE
 #import <MobileCoreServices/MobileCoreServices.h>
 #else
@@ -65,6 +67,34 @@ std::string encodePNG(const PremultipliedImage& src) {
     return result;
 }
 
+CGImageRef decodeWebP(CFDataRef data) {
+    int width = 0, height = 0;
+    void* webp = WebPDecodeARGB(CFDataGetBytePtr(data), CFDataGetLength(data), &width, &height);
+
+    CGColorSpaceRef color_space = CGColorSpaceCreateDeviceRGB();
+    if (!color_space) {
+        free(webp);
+        throw std::runtime_error("CGColorSpaceCreateDeviceRGB failed");
+    }
+
+    CGContextRef context = CGBitmapContextCreate(webp, width, height, 8, width * 4, color_space, kCGImageAlphaNoneSkipFirst);
+    if (!context) {
+        CGColorSpaceRelease(color_space);
+        free(webp);
+        throw std::runtime_error("CGBitmapContextCreate failed");
+    }
+
+    CGImageRef image = CGBitmapContextCreateImage(context);
+    if (!image) {
+        CGContextRelease(context);
+        CGColorSpaceRelease(color_space);
+        free(webp);
+        throw std::runtime_error("CGBitmapContextCreateImage failed");
+    }
+
+    return image;
+}
+
 PremultipliedImage decodeImage(const std::string &source_data) {
     CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, reinterpret_cast<const unsigned char *>(source_data.data()), source_data.size(), kCFAllocatorNull);
     if (!data) {
@@ -77,11 +107,25 @@ PremultipliedImage decodeImage(const std::string &source_data) {
         throw std::runtime_error("CGImageSourceCreateWithData failed");
     }
 
-    CGImageRef image = CGImageSourceCreateImageAtIndex(image_source, 0, NULL);
+    CGImageRef image = nil;
+
+    // CoreFoundation does not decode WebP natively.
+    if (CFDataGetLength(data) >= 12) {
+        const uint8_t* dataPtr = CFDataGetBytePtr(data);
+        uint32_t riff_magic = (dataPtr[0] << 24) | (dataPtr[1] << 16) | (dataPtr[2] << 8) | dataPtr[3];
+        uint32_t webp_magic = (dataPtr[8] << 24) | (dataPtr[9] << 16) | (dataPtr[10] << 8) | dataPtr[11];
+        if (riff_magic == 0x52494646 && webp_magic == 0x57454250) {
+            image = decodeWebP(data);
+        }
+    }
+
     if (!image) {
-        CFRelease(image_source);
-        CFRelease(data);
-        throw std::runtime_error("CGImageSourceCreateImageAtIndex failed");
+        image = CGImageSourceCreateImageAtIndex(image_source, 0, NULL);
+        if (!image) {
+            CFRelease(image_source);
+            CFRelease(data);
+            throw std::runtime_error("CGImageSourceCreateImageAtIndex failed");
+        }
     }
 
     CGColorSpaceRef color_space = CGColorSpaceCreateDeviceRGB();
