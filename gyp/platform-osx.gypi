@@ -63,14 +63,17 @@
           '<@(variant_cflags)',
           '<@(sqlite_cflags)',
           '<@(zlib_cflags)',
+          '<@(webp_cflags)',
         ],
         'ldflags': [
           '<@(zlib_ldflags)',
+          '<@(webp_ldflags)',
         ],
         'libraries': [
           '<@(libuv_static_libs)',
           '<@(sqlite_static_libs)',
           '<@(zlib_static_libs)',
+          '<@(webp_static_libs)',
           '$(SDKROOT)/System/Library/Frameworks/Cocoa.framework',
           '$(SDKROOT)/System/Library/Frameworks/CoreLocation.framework',
           '$(SDKROOT)/System/Library/Frameworks/OpenGL.framework',
